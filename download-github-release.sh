@@ -1,6 +1,29 @@
 #!/bin/bash
 
-# 用法: ./download-github-release.sh <github-release-url> [output-dir]
+#================================================================
+#
+#   Filename:   download-github-release.sh
+#   Creator:    Roc
+#   CreateTime: 2025年02月13日
+#
+#================================================================
+
+#================================================================
+# 下载 GitHub release 的脚本
+# 使用 curl 下载 GitHub release 的所有 assets
+# 下载目录为项目名-版本号
+# 需要提供 GitHub release 的 URL
+
+# 使用方法：
+# 1. 将脚本保存为 download-github-release.sh
+# 2. 在终端中运行 chmod +x download-github-release.sh
+# 3. 运行 ./download-github-release.sh <github-release-url> [output-dir]
+# 4. 可选地指定输出目录，默认为项目名-版本号
+# 5. 脚本会自动下载所有 assets 到指定目录
+# 6. 如果没有指定输出目录，则默认为项目名-版本号
+# 7. 如果没有找到任何 assets，则脚本会退出并输出错误信息
+#
+#================================================================
 
 set -e
 
@@ -41,8 +64,6 @@ fi
 
 # 创建输出目录（如果不存在）
 mkdir -p "$OUTPUT_DIR"
-
-# ...existing code...
 
 # 检查是否有 assets
 ASSET_URLS=$(echo "$RELEASE_JSON" | grep '"browser_download_url"' | cut -d '"' -f 4)
