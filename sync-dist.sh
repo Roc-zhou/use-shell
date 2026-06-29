@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # ============================================================
-# 脚本功能：从功能分支（*-cdn-feature-opt）将 dist 目录
-#           同步到对应的主分支（test/release/main）
+# 脚本功能：从功能分支（*-new-feature-master）将 dist 目录
+#           同步到对应的主分支（test/release/master）
 # ============================================================
 
 set -e  # 遇到错误立即退出
@@ -62,24 +62,65 @@ fi
 log_info "当前分支: $ORIGINAL_BRANCH"
 
 # ============================================================
-# 2. 判断是否匹配功能分支
+# 2. 判断是否匹配功能分支（支持两种模式）
 # ============================================================
 TARGET_BRANCH=""
+FEATURE_PATTERN=""
 
+# 检测当前分支属于哪种模式
 case "$ORIGINAL_BRANCH" in
-    main-cdn-feature-opt)
-        TARGET_BRANCH="main"
+    *-cdn-feature-opt)
+        FEATURE_PATTERN="cdn-feature-opt"
         ;;
-    release-cdn-feature-opt)
-        TARGET_BRANCH="release"
-        ;;
-    test-cdn-feature-opt)
-        TARGET_BRANCH="test"
+    *-new-feature-master)
+        FEATURE_PATTERN="new-feature-master"
         ;;
     *)
-        log_error "当前分支 '$ORIGINAL_BRANCH' 不是功能分支！"
-        log_error "支持的分支: main-cdn-feature-opt, release-cdn-feature-opt, test-cdn-feature-opt"
+        log_error "当前分支 '$ORIGINAL_BRANCH' 不是有效的功能分支！"
+        log_error "支持的分支模式:"
+        log_error "  - *-cdn-feature-opt"
+        log_error "  - *-new-feature-master"
         cleanup_and_exit 1
+        ;;
+esac
+
+log_info "匹配到功能分支模式: $FEATURE_PATTERN"
+
+# 根据分支模式确定目标分支
+case "$FEATURE_PATTERN" in
+    cdn-feature-opt)
+        case "$ORIGINAL_BRANCH" in
+            main-cdn-feature-opt)
+                TARGET_BRANCH="main"
+                ;;
+            release-cdn-feature-opt)
+                TARGET_BRANCH="release"
+                ;;
+            test-cdn-feature-opt)
+                TARGET_BRANCH="test"
+                ;;
+            *)
+                log_error "无法识别的功能分支: $ORIGINAL_BRANCH"
+                cleanup_and_exit 1
+                ;;
+        esac
+        ;;
+    new-feature-master)
+        case "$ORIGINAL_BRANCH" in
+            master-new-feature-master)
+                TARGET_BRANCH="master"
+                ;;
+            release-new-feature-master)
+                TARGET_BRANCH="release"
+                ;;
+            test-new-feature-master)
+                TARGET_BRANCH="test"
+                ;;
+            *)
+                log_error "无法识别的功能分支: $ORIGINAL_BRANCH"
+                cleanup_and_exit 1
+                ;;
+        esac
         ;;
 esac
 
@@ -252,6 +293,7 @@ log_info "=========================================="
 log_info "✅ 全部完成！"
 log_info "   原分支: $ORIGINAL_BRANCH"
 log_info "   目标分支: $TARGET_BRANCH"
+log_info "   分支模式: $FEATURE_PATTERN"
 log_info "   提交信息: $COMMIT_MSG"
 log_info "=========================================="
 
