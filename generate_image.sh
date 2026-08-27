@@ -232,12 +232,20 @@ main "$@"
 
 
 
-
-# 只传尺寸，背景和字体颜色自动生成
+# 基本使用 - 自动生成并复制
 # ./generate_image.sh 600*300
 
-# 指定尺寸和背景色，字体色自动生成
-# ./generate_image.sh 800x400 1a2b3c
+# 指定背景色
+# ./generate_image.sh 800x400 2c3e50
 
-# 完全指定所有参数
-# ./generate_image.sh 1024x768 2c3e50 ffffff
+# 完全自定义
+# ./generate_image.sh 1024x768 1a2b3c ffffff
+
+# 不自动复制（仅显示）
+# ./generate_image.sh 600*300 --no-copy
+
+# 查看帮助
+# ./generate_image.sh --help
+
+# 交互式运行
+# ./generate_image.sh
